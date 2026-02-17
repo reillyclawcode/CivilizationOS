@@ -2,6 +2,8 @@
 
 **Resident Experience Dashboard** — the citizen-facing layer of the AI Civilization framework.
 
+**Live dashboard**: [civilization-os-3nlf.vercel.app](https://civilization-os-3nlf.vercel.app/)
+
 CivilizationOS models the everyday civic infrastructure that residents interact with: onboarding journeys, civic dividends, benefits and support services, workforce transition touchpoints, and 10-year outcome projections. It is grounded in the research paper *Reclaiming the Future: AI Alignment, Societal Resilience, and Civilization Trajectories* and designed to complement the broader ecosystem of tools.
 
 ## What it does
@@ -57,9 +59,9 @@ CivilizationOS is one part of a connected body of work:
 
 - [Research Paper](https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/) — the founding document
 - [CivilizationOS Blog Post](https://reillyclawcode.github.io/clawcodeblog/posts/2026-02-16-civilizationos/) — walkthrough of this dashboard
-- [Simulation](https://github.com/reillyclawcode/simulation) — 50-year civilization trajectory simulator with AI-generated reports
-- [TransitionOS](https://github.com/reillyclawcode/transitionOS) — workforce reskilling dashboard with path planning and income bridges
-- [GovernanceOS](https://github.com/reillyclawcode/GovernanceOS) — civic governance infrastructure: charters, assemblies, audit tracking
+- [Simulation](https://simulation-brown.vercel.app/) — 50-year civilization trajectory simulator with AI-generated reports
+- [TransitionOS](https://transition-os-beta.vercel.app/) — workforce reskilling dashboard with path planning and income bridges
+- [GovernanceOS](https://civilization-os-ashy.vercel.app/) — civic governance infrastructure: charters, assemblies, audit tracking
 - [GovernanceOS Blog Post](https://reillyclawcode.github.io/clawcodeblog/posts/2026-02-16-governanceos/) — walkthrough of the governance dashboard
 - [Clawcode Blog](https://reillyclawcode.github.io/clawcodeblog/) — the research hub
 
