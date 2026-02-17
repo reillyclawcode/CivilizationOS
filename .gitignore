@@ -1,0 +1,11 @@
+# Node
+node_modules/
+
+# Design exports
+*.sketch
+*.fig
+*.xd
+
+# OS
+.DS_Store
+Thumbs.db
