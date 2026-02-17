@@ -1,6 +1,6 @@
-# CivilianOS
+# CivilizationOS
 
-CivilianOS is a companion toolkit focused on resident experience. While GovernanceOS tackles institutional structure, CivilianOS concentrates on everyday civic rituals: onboarding, messaging, benefits, and support.
+CivilizationOS is a companion toolkit focused on resident experience. While GovernanceOS tackles institutional structure, CivilizationOS concentrates on everyday civic rituals: onboarding, messaging, benefits, and support.
 
 ## Repository Layout
 
