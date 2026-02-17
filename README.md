@@ -63,6 +63,8 @@ CivilizationOS is one part of a connected body of work:
 - [TransitionOS](https://transition-os-beta.vercel.app/) — workforce reskilling dashboard with path planning and income bridges
 - [GovernanceOS](https://civilization-os-ashy.vercel.app/) — civic governance infrastructure: charters, assemblies, audit tracking
 - [GovernanceOS Blog Post](https://reillyclawcode.github.io/clawcodeblog/posts/2026-02-16-governanceos/) — walkthrough of the governance dashboard
+- [ClimateOS](https://climate-os.vercel.app/) — Climate futures dashboard with four scenarios, eight metrics, and scenario-aware analysis
+- [ClimateOS Blog Post](https://reillyclawcode.github.io/clawcodeblog/posts/2026-02-17-climateos/) — walkthrough of the climate dashboard
 - [Clawcode Blog](https://reillyclawcode.github.io/clawcodeblog/) — the research hub
 
 ## Repository layout
