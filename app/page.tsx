@@ -79,7 +79,66 @@ export default function Home() {
 
         {/* OVERVIEW */}
         {tab==="overview" && (<section>
-          <Heading icon={"\u{1F4CA}"} title="Dashboard Overview" sub="Key resident metrics at a glance" />
+          <Heading icon={"\u{1F4CA}"} title="Dashboard Overview" sub="Civilization health index, resident metrics, and KPI trajectories" />
+
+          {/* ── Civilization Health Index ── */}
+          {(() => {
+            const domains = [
+              { name: "Climate & Environment", icon: "\u{1F30D}", score: 42, grade: "D+", trend: "declining" as const, color: "#10b981", app: "ClimateOS", url: "https://climate-os.vercel.app/", note: "+1.2\u00b0C, 37 Gt/yr emissions, biodiversity declining" },
+              { name: "Governance & Institutions", icon: "\u{1F3DB}\uFE0F", score: 48, grade: "D+", trend: "mixed" as const, color: "#8b5cf6", app: "GovernanceOS", url: "https://civilization-os-ashy.vercel.app/", note: "Democratic backsliding in 72 countries, AI oversight nascent" },
+              { name: "Workforce & Economy", icon: "\u{1F6E0}\uFE0F", score: 52, grade: "C-", trend: "mixed" as const, color: "#38bdf8", app: "TransitionOS", url: "https://transition-os-beta.vercel.app/", note: "Automation displacing 15% of jobs, reskilling insufficient" },
+              { name: "Social Equity", icon: "\u{1F91D}", score: 38, grade: "D-", trend: "declining" as const, color: "#f59e0b", app: "CivilizationOS", url: "#", note: "GINI rising, 700M in extreme poverty, housing unaffordable" },
+              { name: "Technology & AI", icon: "\u{1F916}", score: 55, grade: "C", trend: "improving" as const, color: "#06b6d4", app: "Simulation", url: "https://simulation-tau-dun.vercel.app/", note: "Rapid capability growth, governance lagging behind deployment" },
+              { name: "Civic Wellbeing", icon: "\u{2764}\uFE0F", score: 45, grade: "C-", trend: "stable" as const, color: "#f43f5e", app: "CivilizationOS", url: "#", note: `Satisfaction ${data.kpis.find(k=>k.id==="satisfaction")?.current || "3.2"}/5, trust fragile` },
+            ];
+            const overall = Math.round(domains.reduce((a, d) => a + d.score, 0) / domains.length);
+            const overallGrade = overall >= 73 ? "B" : overall >= 63 ? "C+" : overall >= 53 ? "C" : overall >= 48 ? "D+" : overall >= 43 ? "D" : overall >= 38 ? "D-" : "F";
+            const gColor = (sc: number) => sc >= 73 ? "#10b981" : sc >= 53 ? "#f59e0b" : sc >= 38 ? "#fb923c" : "#f43f5e";
+            const trendIcon = (t: string) => t === "improving" ? "\u2191" : t === "declining" ? "\u2193" : "\u2192";
+            const trendClr = (t: string) => t === "improving" ? "#10b981" : t === "declining" ? "#f43f5e" : "#f59e0b";
+            return (
+              <div className="glass-card p-6 mb-8" style={{ borderTop: `3px solid ${gColor(overall)}` }}>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-6">
+                  <div className="relative w-28 h-28 flex-shrink-0 mx-auto sm:mx-0">
+                    <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                      <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                      <circle cx="50" cy="50" r="42" fill="none" stroke={gColor(overall)} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${overall * 2.64} 264`} />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-bold" style={{ color: gColor(overall), fontFamily: "'Space Grotesk',sans-serif" }}>{overallGrade}</span>
+                      <span className="text-[10px]" style={{ color: "var(--text-faint)" }}>{overall}/100</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text)" }}>Civilization Health Index</h3>
+                    <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>
+                      Aggregate score across 6 domains: climate, governance, economy, equity, technology, and civic wellbeing. Each domain draws from its respective OS dashboard for real-time assessment.
+                    </p>
+                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "rgba(16,185,129,0.12)", color: "#10b981", border: "1px solid rgba(16,185,129,0.3)" }}>With full intervention: B+ (78/100)</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "rgba(244,63,94,0.12)", color: "#f43f5e", border: "1px solid rgba(244,63,94,0.3)" }}>If trends continue: F (22/100)</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {domains.map(d => (
+                    <a key={d.name} href={d.url} target={d.url === "#" ? undefined : "_blank"} rel="noopener" className="glass-card p-3 text-center transition-all hover:border-white/20 block">
+                      <span className="text-lg">{d.icon}</span>
+                      <p className="text-[10px] font-semibold mt-1" style={{ color: "var(--text)" }}>{d.name}</p>
+                      <div className="flex items-center justify-center gap-1.5 mt-1">
+                        <span className="text-lg font-bold" style={{ color: gColor(d.score), fontFamily: "'Space Grotesk',sans-serif" }}>{d.grade}</span>
+                        <span className="text-sm font-bold" style={{ color: trendClr(d.trend) }}>{trendIcon(d.trend)}</span>
+                      </div>
+                      <p className="text-[10px] mt-0.5" style={{ color: "var(--text-faint)" }}>{d.score}/100</p>
+                      <p className="text-[9px] mt-1 leading-tight" style={{ color: "var(--text-muted)" }}>{d.note}</p>
+                      {d.url !== "#" && <p className="text-[8px] mt-1" style={{ color: d.color }}>{d.app} &rarr;</p>}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
             <Stat label="Residents served" value={fmtK(data.dividendModel.populationServed)} color="var(--amber)" />
             <Stat label="Biweekly dividend" value={`$${data.dividendModel.biweeklyPerResident}`} sub="per resident" color="var(--emerald)" />
