@@ -60,7 +60,7 @@ export default function Home() {
           <div className="flex flex-wrap gap-3 mt-5">
             <a href="https://github.com/reillyclawcode/CivilizationOS" target="_blank" rel="noopener" className="text-xs px-3 py-1.5 rounded-full" style={{background:"rgba(245,158,11,0.12)",color:"var(--amber)",border:"1px solid rgba(245,158,11,0.3)"}}>{"\u{1F4BB}"} GitHub</a>
             <a href="https://reillyclawcode.github.io/clawcodeblog/research/ai-civilization/" target="_blank" rel="noopener" className="text-xs px-3 py-1.5 rounded-full" style={{background:"rgba(139,92,246,0.12)",color:"#a78bfa",border:"1px solid rgba(139,92,246,0.3)"}}>{"\u{1F4DC}"} Research Paper</a>
-            <a href="https://simulation-tau-dun.vercel.app/" target="_blank" rel="noopener" className="text-xs px-3 py-1.5 rounded-full" style={{background:"rgba(14,165,233,0.12)",color:"#38bdf8",border:"1px solid rgba(14,165,233,0.3)"}}>{"\u{1F52C}"} Simulation</a>
+            <a href="https://simulation-brown.vercel.app/" target="_blank" rel="noopener" className="text-xs px-3 py-1.5 rounded-full" style={{background:"rgba(14,165,233,0.12)",color:"#38bdf8",border:"1px solid rgba(14,165,233,0.3)"}}>{"\u{1F52C}"} Simulation</a>
             <a href="https://transition-os-beta.vercel.app/" target="_blank" rel="noopener" className="text-xs px-3 py-1.5 rounded-full" style={{background:"rgba(16,185,129,0.12)",color:"#34d399",border:"1px solid rgba(16,185,129,0.3)"}}>{"\u{1F6E0}\uFE0F"} TransitionOS</a>
             <a href="https://civilization-os-ashy.vercel.app/" target="_blank" rel="noopener" className="text-xs px-3 py-1.5 rounded-full" style={{background:"rgba(139,92,246,0.12)",color:"#a78bfa",border:"1px solid rgba(139,92,246,0.3)"}}>{"\u{1F3DB}\uFE0F"} GovernanceOS</a>
             <a href="https://climate-os.vercel.app/" target="_blank" rel="noopener" className="text-xs px-3 py-1.5 rounded-full" style={{background:"rgba(20,184,166,0.12)",color:"#2dd4bf",border:"1px solid rgba(20,184,166,0.3)"}}>{"\u{1F331}"} ClimateOS</a>
@@ -88,7 +88,7 @@ export default function Home() {
               { name: "Governance & Institutions", icon: "\u{1F3DB}\uFE0F", score: 48, grade: "D+", trend: "mixed" as const, color: "#8b5cf6", app: "GovernanceOS", url: "https://civilization-os-ashy.vercel.app/", note: "Democratic backsliding in 72 countries, AI oversight nascent" },
               { name: "Workforce & Economy", icon: "\u{1F6E0}\uFE0F", score: 52, grade: "C-", trend: "mixed" as const, color: "#38bdf8", app: "TransitionOS", url: "https://transition-os-beta.vercel.app/", note: "Automation displacing 15% of jobs, reskilling insufficient" },
               { name: "Social Equity", icon: "\u{1F91D}", score: 38, grade: "D-", trend: "declining" as const, color: "#f59e0b", app: "CivilizationOS", url: "#", note: "GINI rising, 700M in extreme poverty, housing unaffordable" },
-              { name: "Technology & AI", icon: "\u{1F916}", score: 55, grade: "C", trend: "improving" as const, color: "#06b6d4", app: "Simulation", url: "https://simulation-tau-dun.vercel.app/", note: "Rapid capability growth, governance lagging behind deployment" },
+              { name: "Technology & AI", icon: "\u{1F916}", score: 55, grade: "C", trend: "improving" as const, color: "#06b6d4", app: "Simulation", url: "https://simulation-brown.vercel.app/", note: "Rapid capability growth, governance lagging behind deployment" },
               { name: "Civic Wellbeing", icon: "\u{2764}\uFE0F", score: 45, grade: "C-", trend: "stable" as const, color: "#f43f5e", app: "CivilizationOS", url: "#", note: `Satisfaction ${data.kpis.find(k=>k.id==="satisfaction")?.current || "3.2"}/5, trust fragile` },
             ];
             const overall = Math.round(domains.reduce((a, d) => a + d.score, 0) / domains.length);
@@ -365,7 +365,7 @@ export default function Home() {
         <p className="mt-1">
           <a href="https://reillyclawcode.github.io/clawcodeblog/" target="_blank" rel="noopener" className="underline" style={{color:"var(--text-muted)"}}>Blog</a>{" \u00B7 "}
           <a href="https://github.com/reillyclawcode/CivilizationOS" target="_blank" rel="noopener" className="underline" style={{color:"var(--text-muted)"}}>GitHub</a>{" \u00B7 "}
-          <a href="https://simulation-tau-dun.vercel.app/" target="_blank" rel="noopener" className="underline" style={{color:"var(--text-muted)"}}>Simulation</a>{" \u00B7 "}
+          <a href="https://simulation-brown.vercel.app/" target="_blank" rel="noopener" className="underline" style={{color:"var(--text-muted)"}}>Simulation</a>{" \u00B7 "}
           <a href="https://transition-os-beta.vercel.app/" target="_blank" rel="noopener" className="underline" style={{color:"var(--text-muted)"}}>TransitionOS</a>{" \u00B7 "}
           <a href="https://civilization-os-ashy.vercel.app/" target="_blank" rel="noopener" className="underline" style={{color:"var(--text-muted)"}}>GovernanceOS</a>{" \u00B7 "}
           <a href="https://climate-os.vercel.app/" target="_blank" rel="noopener" className="underline" style={{color:"var(--text-muted)"}}>ClimateOS</a>
