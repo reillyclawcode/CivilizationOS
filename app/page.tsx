@@ -23,10 +23,19 @@ function Stat({ label, value, sub, color }: { label:string; value:string; sub?:s
   return (<div className="glass-card p-4"><p className="text-xs uppercase tracking-wider mb-1" style={{color:"var(--text-faint)"}}>{label}</p><p className="text-2xl font-bold" style={{color:color||"var(--amber)",fontFamily:"'Space Grotesk',sans-serif"}}>{value}</p>{sub && <p className="text-xs mt-1" style={{color:"var(--text-muted)"}}>{sub}</p>}</div>);
 }
 
+type CivScenario = "aggressive" | "moderate" | "bau" | "worst";
+const CIV_SCENARIOS: { id: CivScenario; name: string; icon: string; color: string; desc: string }[] = [
+  { id: "aggressive", name: "Aggressive Action", icon: "\u{1F31F}", color: "#10b981", desc: "Full deployment of civic infrastructure, dividends, AI governance, climate action, and workforce transition programs." },
+  { id: "moderate", name: "Moderate Reform", icon: "\u{1F6E0}\uFE0F", color: "#38bdf8", desc: "Partial adoption of civic programs. Dividends in pilot regions, selective governance reforms, gradual climate response." },
+  { id: "bau", name: "Business as Usual", icon: "\u{1F4C9}", color: "#f59e0b", desc: "Current trajectory continues. No new civic infrastructure, minimal coordination, piecemeal responses to systemic crises." },
+  { id: "worst", name: "Worst Case", icon: "\u{1F6A8}", color: "#f43f5e", desc: "Institutional failure, democratic backsliding, civic disengagement, unchecked AI, and compounding social crises." },
+];
+
 export default function Home() {
   const [data, setData] = useState<SeedData|null>(null);
   const [tab, setTab] = useState<Tab>("overview");
   const [selectedJourney, setSelectedJourney] = useState<string|null>(null);
+  const [activeScenario, setActiveScenario] = useState<CivScenario>("aggressive");
 
   useEffect(() => { fetch("/data/seed.json").then(r=>r.json()).then(setData).catch(console.error); }, []);
 
@@ -78,113 +87,175 @@ export default function Home() {
       <div className="max-w-6xl mx-auto px-4 mt-8">
 
         {/* OVERVIEW */}
-        {tab==="overview" && (<section>
-          <Heading icon={"\u{1F4CA}"} title="Dashboard Overview" sub="Civilization health index, resident metrics, and KPI trajectories" />
+        {tab==="overview" && (() => {
+          const s = CIV_SCENARIOS.find(sc => sc.id === activeScenario)!;
+          const letterGrade = (sc: number) => sc >= 93 ? "A" : sc >= 85 ? "A-" : sc >= 80 ? "B+" : sc >= 73 ? "B" : sc >= 68 ? "B-" : sc >= 63 ? "C+" : sc >= 58 ? "C" : sc >= 53 ? "C-" : sc >= 48 ? "D+" : sc >= 43 ? "D" : sc >= 38 ? "D-" : "F";
+          const gColor = (sc: number) => sc >= 73 ? "#10b981" : sc >= 53 ? "#f59e0b" : sc >= 38 ? "#fb923c" : "#f43f5e";
+          const trendIcon = (t: string) => t === "improving" ? "\u2191" : t === "declining" ? "\u2193" : "\u2192";
+          const trendClr = (t: string) => t === "improving" ? "#10b981" : t === "declining" ? "#f43f5e" : "#f59e0b";
 
-          {/* ── Civilization Health Index ── */}
-          {(() => {
-            const domains = [
-              { name: "Climate & Environment", icon: "\u{1F30D}", score: 42, grade: "D+", trend: "declining" as const, color: "#10b981", app: "ClimateOS", url: "https://climate-os.vercel.app/", note: "+1.2\u00b0C, 37 Gt/yr emissions, biodiversity declining" },
-              { name: "Governance & Institutions", icon: "\u{1F3DB}\uFE0F", score: 48, grade: "D+", trend: "mixed" as const, color: "#8b5cf6", app: "GovernanceOS", url: "https://civilization-os-ashy.vercel.app/", note: "Democratic backsliding in 72 countries, AI oversight nascent" },
-              { name: "Workforce & Economy", icon: "\u{1F6E0}\uFE0F", score: 52, grade: "C-", trend: "mixed" as const, color: "#38bdf8", app: "TransitionOS", url: "https://transition-os-beta.vercel.app/", note: "Automation displacing 15% of jobs, reskilling insufficient" },
-              { name: "Social Equity", icon: "\u{1F91D}", score: 38, grade: "D-", trend: "declining" as const, color: "#f59e0b", app: "CivilizationOS", url: "#", note: "GINI rising, 700M in extreme poverty, housing unaffordable" },
-              { name: "Technology & AI", icon: "\u{1F916}", score: 55, grade: "C", trend: "improving" as const, color: "#06b6d4", app: "Simulation", url: "https://simulation-brown.vercel.app/", note: "Rapid capability growth, governance lagging behind deployment" },
-              { name: "Civic Wellbeing", icon: "\u{2764}\uFE0F", score: 45, grade: "C-", trend: "stable" as const, color: "#f43f5e", app: "CivilizationOS", url: "#", note: `Satisfaction ${data.kpis.find(k=>k.id==="satisfaction")?.current || "3.2"}/5, trust fragile` },
-            ];
-            const overall = Math.round(domains.reduce((a, d) => a + d.score, 0) / domains.length);
-            const overallGrade = overall >= 73 ? "B" : overall >= 63 ? "C+" : overall >= 53 ? "C" : overall >= 48 ? "D+" : overall >= 43 ? "D" : overall >= 38 ? "D-" : "F";
-            const gColor = (sc: number) => sc >= 73 ? "#10b981" : sc >= 53 ? "#f59e0b" : sc >= 38 ? "#fb923c" : "#f43f5e";
-            const trendIcon = (t: string) => t === "improving" ? "\u2191" : t === "declining" ? "\u2193" : "\u2192";
-            const trendClr = (t: string) => t === "improving" ? "#10b981" : t === "declining" ? "#f43f5e" : "#f59e0b";
-            return (
-              <div className="glass-card p-6 mb-8" style={{ borderTop: `3px solid ${gColor(overall)}` }}>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-6">
-                  <div className="relative w-28 h-28 flex-shrink-0 mx-auto sm:mx-0">
-                    <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                      <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                      <circle cx="50" cy="50" r="42" fill="none" stroke={gColor(overall)} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${overall * 2.64} 264`} />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-bold" style={{ color: gColor(overall), fontFamily: "'Space Grotesk',sans-serif" }}>{overallGrade}</span>
-                      <span className="text-[10px]" style={{ color: "var(--text-faint)" }}>{overall}/100</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 text-center sm:text-left">
-                    <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text)" }}>Civilization Health Index</h3>
-                    <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>
-                      Aggregate score across 6 domains: climate, governance, economy, equity, technology, and civic wellbeing. Each domain draws from its respective OS dashboard for real-time assessment.
-                    </p>
-                    <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "rgba(16,185,129,0.12)", color: "#10b981", border: "1px solid rgba(16,185,129,0.3)" }}>With full intervention: B+ (78/100)</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "rgba(244,63,94,0.12)", color: "#f43f5e", border: "1px solid rgba(244,63,94,0.3)" }}>If trends continue: F (22/100)</span>
-                    </div>
+          const domainScores: Record<string, { score: number; trend: string; note: string }[]> = {
+            aggressive: [
+              { score: 88, trend: "improving", note: "+1.2\u00b0C stabilized, 99% renewables, forests expanding" },
+              { score: 85, trend: "improving", note: "100% AI audited, 95% participation, charter enforced" },
+              { score: 82, trend: "improving", note: "Full reskilling + dividends, 2% poverty, full employment" },
+              { score: 75, trend: "improving", note: "GINI declining, universal benefits, housing secured" },
+              { score: 80, trend: "improving", note: "AI governed, open-weight, civic oversight strong" },
+              { score: 78, trend: "improving", note: "Satisfaction 4.6/5, trust restored, services excellent" },
+            ],
+            moderate: [
+              { score: 62, trend: "mixed", note: "+1.8\u00b0C, 88% renewables, biodiversity stabilizing" },
+              { score: 65, trend: "improving", note: "80% AI audited, 76% participation, partial charter" },
+              { score: 63, trend: "improving", note: "Reskilling working, 5% poverty, moderate placement" },
+              { score: 55, trend: "stable", note: "GINI stable, partial benefits, some housing pressure" },
+              { score: 62, trend: "mixed", note: "AI governance building, gaps in emerging tech" },
+              { score: 58, trend: "stable", note: "Satisfaction 3.8/5, trust rebuilding slowly" },
+            ],
+            bau: [
+              { score: 28, trend: "declining", note: "+3\u00b0C, 64% renewables, biodiversity halved" },
+              { score: 30, trend: "declining", note: "40% AI audited, 42% participation, weak enforcement" },
+              { score: 35, trend: "declining", note: "Automation outpacing reskilling, 12% poverty" },
+              { score: 22, trend: "declining", note: "GINI rising, safety nets collapsing, housing crisis" },
+              { score: 40, trend: "declining", note: "AI unchecked, proprietary, minimal oversight" },
+              { score: 25, trend: "declining", note: "Satisfaction 2.3/5, trust eroded, services failing" },
+            ],
+            worst: [
+              { score: 12, trend: "declining", note: "+4.6\u00b0C, 42% renewables, ecosystem collapse" },
+              { score: 10, trend: "declining", note: "1% AI audited, 15% participation, no enforcement" },
+              { score: 15, trend: "declining", note: "Mass unemployment, 30% poverty, no safety net" },
+              { score: 8, trend: "declining", note: "Extreme inequality, no benefits, displacement crisis" },
+              { score: 20, trend: "declining", note: "AI concentration, surveillance, no civic override" },
+              { score: 10, trend: "declining", note: "Satisfaction 1.2/5, trust collapsed, services absent" },
+            ],
+          };
+          const domainMeta = [
+            { name: "Climate & Environment", icon: "\u{1F30D}", color: "#10b981", app: "ClimateOS", url: "https://climate-os.vercel.app/" },
+            { name: "Governance & Institutions", icon: "\u{1F3DB}\uFE0F", color: "#8b5cf6", app: "GovernanceOS", url: "https://civilization-os-ashy.vercel.app/" },
+            { name: "Workforce & Economy", icon: "\u{1F6E0}\uFE0F", color: "#38bdf8", app: "TransitionOS", url: "https://transition-os-beta.vercel.app/" },
+            { name: "Social Equity", icon: "\u{1F91D}", color: "#f59e0b", app: "CivilizationOS", url: "#" },
+            { name: "Technology & AI", icon: "\u{1F916}", color: "#06b6d4", app: "Simulation", url: "https://simulation-brown.vercel.app/" },
+            { name: "Civic Wellbeing", icon: "\u{2764}\uFE0F", color: "#f43f5e", app: "CivilizationOS", url: "#" },
+          ];
+          const scores = domainScores[activeScenario];
+          const overall = Math.round(scores.reduce((a, c) => a + c.score, 0) / scores.length);
+
+          const civSummary: Record<string, string> = {
+            aggressive: "Under Aggressive Action, civilization in 2035 is on a recovery trajectory across every domain. Climate is stabilizing at +1.2\u00b0C. Governance institutions are strong, with 100% AI audit coverage and 95% civic participation. The workforce transition is complete \u2014 dividends bridge income gaps, reskilling pathways are universal, and poverty approaches its floor. Social equity is improving as universal benefits and housing programs take effect. AI is governed through open-weight systems with civic oversight. Resident satisfaction reaches 4.6/5. This requires unprecedented coordination but is achievable with current technology and realistic funding.",
+            moderate: "Moderate Reform delivers a functional but stressed civilization by 2035. Climate approaches +1.8\u00b0C \u2014 manageable but tight. Governance is partially deployed, with 80% AI audit coverage. The workforce transition is working but unevenly \u2014 reskilling helps most workers but income gaps persist for the most vulnerable. Social equity is stable but not improving. AI governance is building but gaps in emerging technology domains create risk. This is the \u201cgood enough\u201d scenario \u2014 it avoids catastrophe but doesn\u2019t build the resilience needed for the shocks still coming.",
+            bau: "Business as Usual produces compounding crises by 2035. Climate at +3\u00b0C triggers cascading failures. Only 40% of AI systems are audited. Automation outpaces reskilling, pushing 12% into poverty. Social safety nets strain under the weight of displacement. AI concentration without oversight deepens inequality. Resident satisfaction drops to 2.3/5 as services deteriorate. Every metric is declining and accelerating \u2014 the cost of action in 2035 is orders of magnitude higher than it would have been in 2026.",
+            worst: "The Worst Case is civilizational crisis across every domain. Climate at +4.6\u00b0C with ecosystem collapse. 1% AI audit coverage means technology operates without any democratic check. 30% poverty with no safety net. Extreme inequality with displacement-driven migration. Civic trust has collapsed, satisfaction at 1.2/5. Every system that holds society together \u2014 food, water, governance, economy, technology \u2014 is under existential stress simultaneously. This is what we risk if coordination fails.",
+          };
+
+          return (
+          <section>
+            <Heading icon={"\u{1F4CA}"} title="Dashboard Overview" sub="Civilization health index, scenario projections, and resident metrics" />
+
+            {/* Scenario selector */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+              {CIV_SCENARIOS.map(sc => (
+                <button key={sc.id} onClick={() => setActiveScenario(sc.id)} className={`glass-card p-3 text-left w-full transition-all hover:border-white/20 ${activeScenario === sc.id ? "ring-2" : ""}`} style={activeScenario === sc.id ? { borderColor: `${sc.color}55`, boxShadow: `0 0 20px ${sc.color}11` } : {}}>
+                  <div className="flex items-center gap-2"><span className="text-lg">{sc.icon}</span><span className="text-xs font-semibold" style={{ color: sc.color }}>{sc.name}</span></div>
+                  <p className="text-[10px] mt-1" style={{ color: "var(--text-faint)" }}>{sc.desc.slice(0, 70)}...</p>
+                </button>
+              ))}
+            </div>
+
+            {/* ── Civilization Health Index ── */}
+            <div className="glass-card p-6 mb-8" style={{ borderTop: `3px solid ${gColor(overall)}` }}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-6">
+                <div className="relative w-28 h-28 flex-shrink-0 mx-auto sm:mx-0">
+                  <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke={gColor(overall)} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${overall * 2.64} 264`} />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold" style={{ color: gColor(overall), fontFamily: "'Space Grotesk',sans-serif" }}>{letterGrade(overall)}</span>
+                    <span className="text-[10px]" style={{ color: "var(--text-faint)" }}>{overall}/100</span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {domains.map(d => (
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text)" }}>Civilization Health Index</h3>
+                  <p className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>
+                    Projected 2035 score under <strong style={{ color: s.color }}>{s.name}</strong>. Aggregate across 6 domains: climate, governance, economy, equity, technology, and civic wellbeing.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {domainMeta.map((d, i) => {
+                  const ds = scores[i];
+                  return (
                     <a key={d.name} href={d.url} target={d.url === "#" ? undefined : "_blank"} rel="noopener" className="glass-card p-3 text-center transition-all hover:border-white/20 block">
                       <span className="text-lg">{d.icon}</span>
                       <p className="text-[10px] font-semibold mt-1" style={{ color: "var(--text)" }}>{d.name}</p>
                       <div className="flex items-center justify-center gap-1.5 mt-1">
-                        <span className="text-lg font-bold" style={{ color: gColor(d.score), fontFamily: "'Space Grotesk',sans-serif" }}>{d.grade}</span>
-                        <span className="text-sm font-bold" style={{ color: trendClr(d.trend) }}>{trendIcon(d.trend)}</span>
+                        <span className="text-lg font-bold" style={{ color: gColor(ds.score), fontFamily: "'Space Grotesk',sans-serif" }}>{letterGrade(ds.score)}</span>
+                        <span className="text-sm font-bold" style={{ color: trendClr(ds.trend) }}>{trendIcon(ds.trend)}</span>
                       </div>
-                      <p className="text-[10px] mt-0.5" style={{ color: "var(--text-faint)" }}>{d.score}/100</p>
-                      <p className="text-[9px] mt-1 leading-tight" style={{ color: "var(--text-muted)" }}>{d.note}</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: "var(--text-faint)" }}>{ds.score}/100</p>
+                      <p className="text-[9px] mt-1 leading-tight" style={{ color: "var(--text-muted)" }}>{ds.note}</p>
                       {d.url !== "#" && <p className="text-[8px] mt-1" style={{ color: d.color }}>{d.app} &rarr;</p>}
                     </a>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-            );
-          })()}
+            </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <Stat label="Residents served" value={fmtK(data.dividendModel.populationServed)} color="var(--amber)" />
-            <Stat label="Biweekly dividend" value={`$${data.dividendModel.biweeklyPerResident}`} sub="per resident" color="var(--emerald)" />
-            <Stat label="Civic journeys" value={`${data.journeys.length}`} color="var(--sky)" />
-            <Stat label="Benefits active" value={`${data.benefits.filter(b=>b.status==="active").length}`} sub={`of ${data.benefits.length} total`} color="var(--violet)" />
-          </div>
-          <div className="glass-card p-6 mb-8">
-            <h3 className="text-sm font-semibold mb-4" style={{color:"var(--text)"}}>10-Year KPI Trajectories</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {data.kpis.map(k => (
-                <div key={k.id} className="glass-card p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-xs font-semibold uppercase tracking-widest" style={{color:"var(--text-muted)"}}>{k.label}</p>
-                    <span className="inline-block h-2 w-2 rounded-full" style={{backgroundColor:k.color}} />
-                  </div>
-                  <div className="flex items-end gap-3 mb-2">
-                    <p className="text-2xl font-bold" style={{color:k.color,fontFamily:"'Space Grotesk',sans-serif"}}>{k.current}{k.unit}</p>
-                    <p className="text-[10px] mb-1" style={{color:"var(--text-faint)"}}>Target: {k.target}{k.unit}</p>
-                  </div>
-                  <div className="h-20">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={k.trajectory.map((v,i)=>({year:2026+i,value:v}))} margin={{top:2,right:2,bottom:0,left:-20}}>
-                        <defs><linearGradient id={`og-${k.id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={k.color} stopOpacity={0.3}/><stop offset="100%" stopColor={k.color} stopOpacity={0}/></linearGradient></defs>
-                        <Area type="monotone" dataKey="value" stroke={k.color} fill={`url(#og-${k.id})`} strokeWidth={2} dot={false} />
-                        <XAxis dataKey="year" tick={{fill:"#64748b",fontSize:8}} axisLine={false} tickLine={false} />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+              <Stat label="Residents served" value={fmtK(data.dividendModel.populationServed)} color="var(--amber)" />
+              <Stat label="Biweekly dividend" value={`$${data.dividendModel.biweeklyPerResident}`} sub="per resident" color="var(--emerald)" />
+              <Stat label="Civic journeys" value={`${data.journeys.length}`} color="var(--sky)" />
+              <Stat label="Benefits active" value={`${data.benefits.filter(b=>b.status==="active").length}`} sub={`of ${data.benefits.length} total`} color="var(--violet)" />
             </div>
-          </div>
-          <div className="glass-card p-6">
-            <h3 className="text-sm font-semibold mb-3" style={{color:"var(--text)"}}>Funding Pool Breakdown</h3>
-            <p className="text-xs mb-4" style={{color:"var(--text-faint)"}}>Total pool: ${fmtK(data.dividendModel.poolSize_m * 1_000_000)}/year</p>
-            <div className="space-y-3">
-              {data.dividendModel.fundingSources.map(s => (
-                <div key={s.source} className="flex items-center gap-4">
-                  <div className="w-20 text-right text-xs font-bold" style={{color:"var(--amber)"}}>{s.pctOfPool}%</div>
-                  <div className="flex-1"><div className="h-2 rounded-full overflow-hidden" style={{background:"rgba(255,255,255,0.05)"}}><div className="h-full rounded-full" style={{width:`${s.pctOfPool}%`,background:"var(--amber)",opacity:0.7}} /></div></div>
-                  <div className="flex-1"><p className="text-xs font-semibold" style={{color:"var(--text)"}}>{s.source}</p><p className="text-[10px]" style={{color:"var(--text-faint)"}}>${fmtK(s.annual_m * 1_000_000)}/yr</p></div>
-                </div>
-              ))}
+            <div className="glass-card p-6 mb-8">
+              <h3 className="text-sm font-semibold mb-4" style={{color:"var(--text)"}}>10-Year KPI Trajectories</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {data.kpis.map(k => (
+                  <div key={k.id} className="glass-card p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-semibold uppercase tracking-widest" style={{color:"var(--text-muted)"}}>{k.label}</p>
+                      <span className="inline-block h-2 w-2 rounded-full" style={{backgroundColor:k.color}} />
+                    </div>
+                    <div className="flex items-end gap-3 mb-2">
+                      <p className="text-2xl font-bold" style={{color:k.color,fontFamily:"'Space Grotesk',sans-serif"}}>{k.current}{k.unit}</p>
+                      <p className="text-[10px] mb-1" style={{color:"var(--text-faint)"}}>Target: {k.target}{k.unit}</p>
+                    </div>
+                    <div className="h-20">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={k.trajectory.map((v,i)=>({year:2026+i,value:v}))} margin={{top:2,right:2,bottom:0,left:-20}}>
+                          <defs><linearGradient id={`og-${k.id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={k.color} stopOpacity={0.3}/><stop offset="100%" stopColor={k.color} stopOpacity={0}/></linearGradient></defs>
+                          <Area type="monotone" dataKey="value" stroke={k.color} fill={`url(#og-${k.id})`} strokeWidth={2} dot={false} />
+                          <XAxis dataKey="year" tick={{fill:"#64748b",fontSize:8}} axisLine={false} tickLine={false} />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>)}
+            <div className="glass-card p-6 mb-8">
+              <h3 className="text-sm font-semibold mb-3" style={{color:"var(--text)"}}>Funding Pool Breakdown</h3>
+              <p className="text-xs mb-4" style={{color:"var(--text-faint)"}}>Total pool: ${fmtK(data.dividendModel.poolSize_m * 1_000_000)}/year</p>
+              <div className="space-y-3">
+                {data.dividendModel.fundingSources.map(fs => (
+                  <div key={fs.source} className="flex items-center gap-4">
+                    <div className="w-20 text-right text-xs font-bold" style={{color:"var(--amber)"}}>{fs.pctOfPool}%</div>
+                    <div className="flex-1"><div className="h-2 rounded-full overflow-hidden" style={{background:"rgba(255,255,255,0.05)"}}><div className="h-full rounded-full" style={{width:`${fs.pctOfPool}%`,background:"var(--amber)",opacity:0.7}} /></div></div>
+                    <div className="flex-1"><p className="text-xs font-semibold" style={{color:"var(--text)"}}>{fs.source}</p><p className="text-[10px]" style={{color:"var(--text-faint)"}}>${fmtK(fs.annual_m * 1_000_000)}/yr</p></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div className="glass-card p-6" style={{ borderLeft: `3px solid ${s.color}` }}>
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: s.color, fontFamily: "'Space Grotesk',sans-serif" }}>
+                <span className="text-lg">{s.icon}</span> Civilization in 2035: {s.name}
+              </h3>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{civSummary[activeScenario]}</p>
+            </div>
+          </section>
+          );
+        })()}
 
         {/* JOURNEYS */}
         {tab==="journeys" && (<section>
